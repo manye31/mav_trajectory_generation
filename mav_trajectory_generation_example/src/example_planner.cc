@@ -63,7 +63,7 @@ bool ExamplePlanner::planTrajectory(const Eigen::VectorXd& goal_pos,
   // we have 2 vertices:
   // Start = current position
   // end = desired position and velocity
-  mav_trajectory_generation::Vertex start(dimension), end(dimension);
+  mav_trajectory_generation::Vertex start(dimension), end(dimension), middle(dimension);
 
 
   /******* Configure start point *******/
@@ -78,6 +78,9 @@ bool ExamplePlanner::planTrajectory(const Eigen::VectorXd& goal_pos,
   // add waypoint to list
   vertices.push_back(start);
 
+  middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION,
+                       Eigen::Vector3d(2., .5, .5));
+  vertices.push_back(middle);
 
   /******* Configure end point *******/
   // set end point constraints to desired position and set all derivatives to zero
@@ -130,7 +133,7 @@ bool ExamplePlanner::publishTrajectory(const mav_trajectory_generation::Trajecto
   pub_markers_.publish(markers);
 
   // send trajectory to be executed on UAV
-  mav_planning_msgs::PolynomialTrajectory msg;
+  mav_planning_msgs::PolynomialTrajectory4D msg;
   mav_trajectory_generation::trajectoryToPolynomialTrajectoryMsg(trajectory,
                                                                  &msg);
   msg.header.frame_id = "world";
