@@ -24,7 +24,7 @@ TrajectorySamplerNode::TrajectorySamplerNode(const ros::NodeHandle& nh,
                                              const ros::NodeHandle& nh_private)
     : nh_(nh),
       nh_private_(nh_private),
-      publish_whole_trajectory_(false),
+      publish_whole_trajectory_(true),
       dt_(0.01),
       current_sample_time_(0.0) {
   nh_private_.param("publish_whole_trajectory", publish_whole_trajectory_,
@@ -53,6 +53,7 @@ TrajectorySamplerNode::~TrajectorySamplerNode() { publish_timer_.stop(); }
 
 void TrajectorySamplerNode::pathSegmentsCallback(
     const mav_planning_msgs::PolynomialTrajectory& segments_message) {
+      ROS_INFO("Received trajectory msg");
   if (segments_message.segments.empty()) {
     ROS_WARN("Trajectory sampler: received empty waypoint message");
     return;
@@ -71,6 +72,7 @@ void TrajectorySamplerNode::pathSegmentsCallback(
 
 void TrajectorySamplerNode::pathSegments4DCallback(
     const mav_planning_msgs::PolynomialTrajectory4D& segments_message) {
+  ROS_INFO("Received trajectory4d msg");
   if (segments_message.segments.empty()) {
     ROS_WARN("Trajectory sampler: received empty waypoint message");
     return;
@@ -81,6 +83,7 @@ void TrajectorySamplerNode::pathSegments4DCallback(
 
     bool success = mav_trajectory_generation::polynomialTrajectoryMsgToTrajectory(
         segments_message, &trajectory_);
+    ROS_INFO("Success %d", success);
     if (!success) {
       return;
     }
@@ -89,6 +92,7 @@ void TrajectorySamplerNode::pathSegments4DCallback(
 
 void TrajectorySamplerNode::processTrajectory() {
   // Call the service call to takeover publishing commands.
+  ROS_INFO("processing (whole? %d) trajectory...", publish_whole_trajectory_);
   if (position_hold_client_.exists()) {
     std_srvs::Empty empty_call;
     position_hold_client_.call(empty_call);
@@ -99,9 +103,20 @@ void TrajectorySamplerNode::processTrajectory() {
     mav_msgs::EigenTrajectoryPoint::Vector trajectory_points;
     mav_trajectory_generation::sampleWholeTrajectory(trajectory_, dt_,
                                                      &trajectory_points);
+
+    size_t x = 0;
+    for (auto s : trajectory_points) {
+      ROS_INFO("state %d:\n", x);
+      // std::cout << "State: " << x << ":" << std::endl;
+      std::cout << s.toString() << std::endl;
+      x++;
+    }
+
     trajectory_msgs::MultiDOFJointTrajectory msg_pub;
     msgMultiDofJointTrajectoryFromEigen(trajectory_points, &msg_pub);
     command_pub_.publish(msg_pub);
+
+
   } else {
     publish_timer_.start();
     current_sample_time_ = 0.0;
