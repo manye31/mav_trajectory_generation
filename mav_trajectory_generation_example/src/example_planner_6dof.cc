@@ -249,6 +249,7 @@ vertices.push_back(end);
   
   return true;
 }
+<<<<<<< HEAD
 
 // Plans a trajectory from a start position and velocity to a goal position and velocity
 bool ExamplePlanner::planTrajectory(const Eigen::VectorXd& goal_pos,
@@ -314,6 +315,8 @@ vertices.push_back(end);
   
   return true;
 }
+=======
+>>>>>>> f5f2698610fb6ef179bc793785971834294b9fa5
 
 bool ExamplePlanner::publishTrajectory(const mav_trajectory_generation::Trajectory& trajectory){
   // send trajectory as markers to display them in RVIZ
