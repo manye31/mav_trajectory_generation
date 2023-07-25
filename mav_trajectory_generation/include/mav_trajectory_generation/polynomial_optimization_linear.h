@@ -21,7 +21,7 @@
 #ifndef MAV_TRAJECTORY_GENERATION_POLYNOMIAL_OPTIMIZATION_LINEAR_H_
 #define MAV_TRAJECTORY_GENERATION_POLYNOMIAL_OPTIMIZATION_LINEAR_H_
 
-#include <glog/logging.h>
+// #include <glog/logging.h>
 #include <Eigen/Sparse>
 #include <tuple>
 
@@ -111,7 +111,7 @@ class PolynomialOptimization {
   // Only valid after solveLinear() is called. This is the preferred external
   // interface for getting information back out of the solver.
   void getTrajectory(Trajectory* trajectory) const {
-    CHECK_NOTNULL(trajectory);
+    // CHECK_NOTNULL(trajectory);
     trajectory->setSegments(segments_);
   }
 
@@ -176,24 +176,24 @@ class PolynomialOptimization {
                                      std::vector<Extremum>* candidates) const;
 
   void getVertices(Vertex::Vector* vertices) const {
-    CHECK_NOTNULL(vertices);
+    // CHECK_NOTNULL(vertices);
     *vertices = vertices_;
   }
 
   // Only for internal use -- always use getTrajectory() instead if you can!
   void getSegments(Segment::Vector* segments) const {
-    CHECK_NOTNULL(segments);
+    // CHECK_NOTNULL(segments);
     *segments = segments_;
   }
 
   void getSegmentTimes(std::vector<double>* segment_times) const {
-    CHECK(segment_times != nullptr);
+    // CHECK(segment_times != nullptr);
     *segment_times = segment_times_;
   }
 
   void getFreeConstraints(
       std::vector<Eigen::VectorXd>* free_constraints) const {
-    CHECK(free_constraints != nullptr);
+    // CHECK(free_constraints != nullptr);
     *free_constraints = free_constraints_compact_;
   }
 
@@ -201,7 +201,7 @@ class PolynomialOptimization {
 
   void getFixedConstraints(
       std::vector<Eigen::VectorXd>* fixed_constraints) const {
-    CHECK(fixed_constraints != nullptr);
+    // CHECK(fixed_constraints != nullptr);
     *fixed_constraints = fixed_constraints_compact_;
   }
 

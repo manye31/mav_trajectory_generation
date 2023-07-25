@@ -52,7 +52,7 @@ class Trajectory {
   }
 
   void setSegments(const Segment::Vector& segments) {
-    CHECK(!segments.empty());
+    // CHECK(!segments.empty());
     // Reset states.
     D_ = segments.front().D();
     N_ = segments.front().N();
@@ -64,15 +64,15 @@ class Trajectory {
 
   void addSegments(const Segment::Vector& segments) {
     for (const Segment& segment : segments) {
-      CHECK_EQ(segment.D(), D_);
-      CHECK_EQ(segment.N(), N_);
+      // CHECK_EQ(segment.D(), D_);
+      // CHECK_EQ(segment.N(), N_);
       max_time_ += segment.getTime();
     }
     segments_.insert(segments_.end(), segments.begin(), segments.end());
   }
 
   void getSegments(Segment::Vector* segments) const {
-    CHECK_NOTNULL(segments);
+    // CHECK_NOTNULL(segments);
     *segments = segments_;
   }
 

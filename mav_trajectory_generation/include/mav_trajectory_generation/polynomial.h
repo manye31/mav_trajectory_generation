@@ -21,7 +21,7 @@
 #ifndef MAV_TRAJECTORY_GENERATION_POLYNOMIAL_H_
 #define MAV_TRAJECTORY_GENERATION_POLYNOMIAL_H_
 
-#include <glog/logging.h>
+// #include <glog/logging.h>
 #include <Eigen/Eigen>
 #include <Eigen/SVD>
 #include <utility>
@@ -54,7 +54,7 @@ class Polynomial {
   // Assigns arbitrary coefficients to a polynomial.
   Polynomial(int N, const Eigen::VectorXd& coeffs)
       : N_(N), coefficients_(coeffs) {
-    CHECK_EQ(N_, coeffs.size()) << "Number of coefficients has to match.";
+    // CHECK_EQ(N_, coeffs.size()) << "Number of coefficients has to match.";
   }
 
   Polynomial(const Eigen::VectorXd& coeffs)
@@ -89,14 +89,14 @@ class Polynomial {
   // Coefficients are stored in increasing order with the power of t,
   // i.e. c1 + c2*t + c3*t^2 ==> coeffs = [c1 c2 c3]
   void setCoefficients(const Eigen::VectorXd& coeffs) {
-    CHECK_EQ(N_, coeffs.size()) << "Number of coefficients has to match.";
+    // CHECK_EQ(N_, coeffs.size()) << "Number of coefficients has to match.";
     coefficients_ = coeffs;
   }
 
   // Returns the coefficients for the specified derivative of the
   // polynomial as a ROW vector.
   Eigen::VectorXd getCoefficients(int derivative = 0) const {
-    CHECK_LE(derivative, N_);
+    // CHECK_LE(derivative, N_);
     if (derivative == 0) {
       return coefficients_;
     } else {
@@ -116,7 +116,7 @@ class Polynomial {
   // Fills in all derivatives up to result.size()-1 (that is, if result is a
   // 3-vector, then will fill in derivatives 0, 1, and 2).
   void evaluate(double t, Eigen::VectorXd* result) const {
-    CHECK_LE(result->size(), N_);
+    // CHECK_LE(result->size(), N_);
     const int max_deg = result->size();
 
     const int tmp = N_ - 1;
@@ -200,8 +200,8 @@ class Polynomial {
   // Input: t = time of evaluation
   static void baseCoeffsWithTime(int N, int derivative, double t,
                                  Eigen::VectorXd* coeffs) {
-    CHECK_LT(derivative, N);
-    CHECK_GE(derivative, 0);
+    // CHECK_LT(derivative, N);
+    // CHECK_GE(derivative, 0);
 
     coeffs->resize(N, 1);
     coeffs->setZero();

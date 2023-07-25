@@ -150,7 +150,7 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTime() {
     nlopt_->set_min_objective(
         &PolynomialOptimizationNonLinear<N>::objectiveFunctionTime, this);
   } catch (std::exception& e) {
-    LOG(ERROR) << "error while setting up nlopt: " << e.what() << std::endl;
+    // LOG(ERROR) << "error while setting up nlopt: " << e.what() << std::endl;
     return nlopt::FAILURE;
   }
 
@@ -160,7 +160,7 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTime() {
   try {
     result = nlopt_->optimize(segment_times, final_cost);
   } catch (std::exception& e) {
-    LOG(ERROR) << "error while running nlopt: " << e.what() << std::endl;
+    // LOG(ERROR) << "error while running nlopt: " << e.what() << std::endl;
     return nlopt::FAILURE;
   }
 
@@ -192,7 +192,7 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTimeMellingerOuterLoop() {
                                   N>::objectiveFunctionTimeMellingerOuterLoop,
                               this);
   } catch (std::exception& e) {
-    LOG(ERROR) << "error while setting up nlopt: " << e.what() << std::endl;
+    // LOG(ERROR) << "error while setting up nlopt: " << e.what() << std::endl;
     return nlopt::FAILURE;
   }
 
@@ -202,9 +202,9 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTimeMellingerOuterLoop() {
   try {
     result = nlopt_->optimize(segment_times, final_cost);
   } catch (std::exception& e) {
-    LOG(ERROR) << "error while running nlopt: " << e.what()
-               << ". This likely means the optimization aborted early."
-               << std::endl;
+    // LOG(ERROR) << "error while running nlopt: " << e.what()
+    //            << ". This likely means the optimization aborted early."
+    //            << std::endl;
     if (final_cost == std::numeric_limits<double>::max()) {
       return nlopt::FAILURE;
     }
@@ -418,14 +418,14 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTimeAndFreeConstraints() {
   std::vector<Eigen::VectorXd> free_constraints;
   poly_opt_.getFreeConstraints(&free_constraints);
   if (free_constraints.size() == 0 || free_constraints.front().size() == 0) {
-    LOG(WARNING)
-        << "No free derivative variables, same as time-only optimization.";
+    // LOG(WARNING)
+    //     << "No free derivative variables, same as time-only optimization.";
   }
 
   const size_t n_optimization_variables =
       n_segments + free_constraints.size() * free_constraints.front().size();
 
-  CHECK_GT(n_optimization_variables, 0u);
+  // CHECK_GT(n_optimization_variables, 0u);
 
   initial_solution.reserve(n_optimization_variables);
   initial_step.reserve(n_optimization_variables);
@@ -489,10 +489,10 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTimeAndFreeConstraints() {
 
   // Make sure everything is the same size, otherwise NLOPT will have a bad
   // time.
-  CHECK_EQ(lower_bounds.size(), upper_bounds.size());
-  CHECK_EQ(initial_solution.size(), lower_bounds.size());
-  CHECK_EQ(initial_solution.size(), initial_step.size());
-  CHECK_EQ(initial_solution.size(), n_optimization_variables);
+  // CHECK_EQ(lower_bounds.size(), upper_bounds.size());
+  // CHECK_EQ(initial_solution.size(), lower_bounds.size());
+  // CHECK_EQ(initial_solution.size(), initial_step.size());
+  // CHECK_EQ(initial_solution.size(), n_optimization_variables);
 
   try {
     nlopt_->set_initial_step(initial_step);
@@ -502,7 +502,7 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTimeAndFreeConstraints() {
                                   N>::objectiveFunctionTimeAndConstraints,
                               this);
   } catch (std::exception& e) {
-    LOG(ERROR) << "error while setting up nlopt: " << e.what() << std::endl;
+    // LOG(ERROR) << "error while setting up nlopt: " << e.what() << std::endl;
     return nlopt::FAILURE;
   }
 
@@ -515,7 +515,7 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTimeAndFreeConstraints() {
     result = nlopt_->optimize(initial_solution, final_cost);
     timer_solve.Stop();
   } catch (std::exception& e) {
-    LOG(ERROR) << "error while running nlopt: " << e.what() << std::endl;
+    // LOG(ERROR) << "error while running nlopt: " << e.what() << std::endl;
     return nlopt::FAILURE;
   }
 
@@ -525,8 +525,8 @@ int PolynomialOptimizationNonLinear<_N>::optimizeTimeAndFreeConstraints() {
 template <int _N>
 bool PolynomialOptimizationNonLinear<_N>::addMaximumMagnitudeConstraint(
     int derivative, double maximum_value) {
-  CHECK_GE(derivative, 0);
-  CHECK_GE(maximum_value, 0.0);
+  // CHECK_GE(derivative, 0);
+  // CHECK_GE(maximum_value, 0.0);
 
   std::shared_ptr<ConstraintData> constraint_data(new ConstraintData);
   constraint_data->derivative = derivative;
@@ -544,7 +544,7 @@ bool PolynomialOptimizationNonLinear<_N>::addMaximumMagnitudeConstraint(
           constraint_data.get(),
           optimization_parameters_.inequality_constraint_tolerance);
     } catch (std::exception& e) {
-      LOG(ERROR) << "ERROR while setting inequality constraint " << e.what()
+      // LOG(ERROR) << "ERROR while setting inequality constraint " << e.what()
                  << std::endl;
       return false;
     }
@@ -556,14 +556,14 @@ template <int _N>
 double PolynomialOptimizationNonLinear<_N>::objectiveFunctionTime(
     const std::vector<double>& segment_times, std::vector<double>& gradient,
     void* data) {
-  CHECK(gradient.empty())
+  // CHECK(gradient.empty())
       << "computing gradient not possible, choose a gradient free method";
-  CHECK_NOTNULL(data);
+  // CHECK_NOTNULL(data);
 
   PolynomialOptimizationNonLinear<N>* optimization_data =
       static_cast<PolynomialOptimizationNonLinear<N>*>(data);  // wheee ...
 
-  CHECK_EQ(segment_times.size(),
+  // CHECK_EQ(segment_times.size(),
            optimization_data->poly_opt_.getNumberSegments());
 
   optimization_data->poly_opt_.updateSegmentTimes(segment_times);
@@ -619,14 +619,14 @@ double
 PolynomialOptimizationNonLinear<_N>::objectiveFunctionTimeMellingerOuterLoop(
     const std::vector<double>& segment_times, std::vector<double>& gradient,
     void* data) {
-  CHECK(!gradient.empty())
+  // CHECK(!gradient.empty())
       << "only with gradients possible, choose a gradient based method";
-  CHECK_NOTNULL(data);
+  // CHECK_NOTNULL(data);
 
   PolynomialOptimizationNonLinear<N>* optimization_data =
       static_cast<PolynomialOptimizationNonLinear<N>*>(data);  // wheee ...
 
-  CHECK_EQ(segment_times.size(),
+  // CHECK_EQ(segment_times.size(),
            optimization_data->poly_opt_.getNumberSegments());
 
   optimization_data->poly_opt_.updateSegmentTimes(segment_times);
@@ -659,9 +659,9 @@ PolynomialOptimizationNonLinear<_N>::objectiveFunctionTimeMellingerOuterLoop(
 template <int _N>
 double PolynomialOptimizationNonLinear<_N>::objectiveFunctionTimeAndConstraints(
     const std::vector<double>& x, std::vector<double>& gradient, void* data) {
-  CHECK(gradient.empty())
+  // CHECK(gradient.empty())
       << "computing gradient not possible, choose a gradient-free method";
-  CHECK_NOTNULL(data);
+  // CHECK_NOTNULL(data);
 
   PolynomialOptimizationNonLinear<N>* optimization_data =
       static_cast<PolynomialOptimizationNonLinear<N>*>(data);  // wheee ...
@@ -671,7 +671,7 @@ double PolynomialOptimizationNonLinear<_N>::objectiveFunctionTimeAndConstraints(
       optimization_data->poly_opt_.getNumberFreeConstraints();
   const size_t dim = optimization_data->poly_opt_.getDimension();
 
-  CHECK_EQ(x.size(), n_segments + n_free_constraints * dim);
+  // CHECK_EQ(x.size(), n_segments + n_free_constraints * dim);
 
   std::vector<Eigen::VectorXd> free_constraints;
   free_constraints.resize(dim);
@@ -745,7 +745,7 @@ template <int _N>
 double PolynomialOptimizationNonLinear<_N>::evaluateMaximumMagnitudeConstraint(
     const std::vector<double>& segment_times, std::vector<double>& gradient,
     void* data) {
-  CHECK(gradient.empty())
+  // CHECK(gradient.empty())
       << "computing gradient not possible, choose a gradient-free method";
   ConstraintData* constraint_data =
       static_cast<ConstraintData*>(data);  // wheee ...
@@ -799,10 +799,10 @@ void PolynomialOptimizationNonLinear<_N>::
     setFreeEndpointDerivativeHardConstraints(
         const Vertex::Vector& vertices, std::vector<double>* lower_bounds,
         std::vector<double>* upper_bounds) {
-  CHECK_NOTNULL(lower_bounds);
-  CHECK_NOTNULL(upper_bounds);
-  CHECK(lower_bounds->empty()) << "Lower bounds not empty!";
-  CHECK(upper_bounds->empty()) << "Upper bounds not empty!";
+  // CHECK_NOTNULL(lower_bounds);
+  // CHECK_NOTNULL(upper_bounds);
+  // CHECK(lower_bounds->empty()) << "Lower bounds not empty!";
+  // CHECK(upper_bounds->empty()) << "Upper bounds not empty!";
 
   const size_t n_free_constraints = poly_opt_.getNumberFreeConstraints();
   const size_t dim = poly_opt_.getDimension();

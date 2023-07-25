@@ -63,7 +63,7 @@ Eigen::VectorXd Trajectory::evaluate(double t, int derivative_order) const {
     }
   }
   if (t > accumulated_time) {
-    LOG(ERROR) << "Time out of range of the trajectory!";
+    // LOG(ERROR) << "Time out of range of the trajectory!";
     return Eigen::VectorXd::Zero(D(), 1);
   }
 
@@ -109,7 +109,7 @@ void Trajectory::evaluateRange(double t_start, double t_end, double dt,
     }
   }
   if (t_start > accumulated_time) {
-    LOG(ERROR) << "Start time out of range of the trajectory!";
+    // LOG(ERROR) << "Start time out of range of the trajectory!";
     return;
   }
 
@@ -141,7 +141,7 @@ void Trajectory::evaluateRange(double t_start, double t_end, double dt,
 }
 
 Trajectory Trajectory::getTrajectoryWithSingleDimension(int dimension) const {
-  CHECK_LT(dimension, D_);
+  // CHECK_LT(dimension, D_);
 
   // Create a new set of segments with just 1 dimension.
   Segment::Vector segments;
@@ -169,7 +169,7 @@ bool Trajectory::getTrajectoryWithAppendedDimension(
     *new_trajectory = *this;
     return true;
   }
-  CHECK_EQ(static_cast<int>(segments_.size()), trajectory_to_append.K());
+  // CHECK_EQ(static_cast<int>(segments_.size()), trajectory_to_append.K());
 
   // Create a new set of segments with all of the dimensions.
   Segment::Vector segments;
@@ -192,8 +192,8 @@ bool Trajectory::computeMinMaxMagnitude(int derivative,
                                         const std::vector<int>& dimensions,
                                         Extremum* minimum,
                                         Extremum* maximum) const {
-  CHECK_NOTNULL(minimum);
-  CHECK_NOTNULL(maximum);
+  // CHECK_NOTNULL(minimum);
+  // CHECK_NOTNULL(maximum);
   minimum->value = std::numeric_limits<double>::max();
   maximum->value = std::numeric_limits<double>::lowest();
 
@@ -236,7 +236,7 @@ std::vector<double> Trajectory::getSegmentTimes() const {
 
 bool Trajectory::addTrajectories(const std::vector<Trajectory>& trajectories,
                                  Trajectory* merged) const {
-  CHECK_NOTNULL(merged);
+  // CHECK_NOTNULL(merged);
   merged->clear();
   *merged = *this;
 
@@ -244,10 +244,10 @@ bool Trajectory::addTrajectories(const std::vector<Trajectory>& trajectories,
     // Check dimensions and coefficients.
     // TODO(rikba): Allow different number of coefficients.
     if (t.D() != D_ || t.N() != N_) {
-      LOG(WARNING) << "Dimension to append: " << t.D()
-                   << " this dimension: " << D_;
-      LOG(WARNING) << "Number of coefficients to append: " << t.N()
-                   << " this number of coefficients: " << N_;
+      // LOG(WARNING) << "Dimension to append: " << t.D()
+      //              << " this dimension: " << D_;
+      // LOG(WARNING) << "Number of coefficients to append: " << t.N()
+      //              << " this number of coefficients: " << N_;
       return false;
     }
     // Add segments.
@@ -261,7 +261,7 @@ bool Trajectory::addTrajectories(const std::vector<Trajectory>& trajectories,
 
 bool Trajectory::offsetTrajectory(const Eigen::VectorXd& A_r_B) {
   if (A_r_B.size() < std::min(D_, 3)) {
-    LOG(WARNING) << "Offset vector size smaller than trajectory dimension.";
+    // LOG(WARNING) << "Offset vector size smaller than trajectory dimension.";
     return false;
   }
   
@@ -293,8 +293,8 @@ bool Trajectory::getVertices(int max_derivative_order_pos,
                              int max_derivative_order_yaw,
                              Vertex::Vector* pos_vertices,
                              Vertex::Vector* yaw_vertices) const {
-  CHECK_NOTNULL(pos_vertices);
-  CHECK_NOTNULL(yaw_vertices);
+  // CHECK_NOTNULL(pos_vertices);
+  // CHECK_NOTNULL(yaw_vertices);
   const std::vector<size_t> kPosDimensions = {0, 1, 2};
   const std::vector<size_t> kYawDimensions = {3};
   const int kMaxDerivativeOrder =
@@ -328,7 +328,7 @@ bool Trajectory::getVertices(int max_derivative_order_pos,
 
 bool Trajectory::getVertices(int max_derivative_order,
                              Vertex::Vector* vertices) const {
-  CHECK_NOTNULL(vertices);
+  // CHECK_NOTNULL(vertices);
   vertices->resize(segments_.size() + 1, D_);
   vertices->front() = getStartVertex(max_derivative_order);
   

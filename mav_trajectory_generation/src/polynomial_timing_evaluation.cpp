@@ -34,9 +34,9 @@ const size_t derivative_to_optimize =
 mav_trajectory_generation::Vertex::Vector createRandomVerticesPath(
     int dimension, size_t n_segments, double average_distance,
     int maximum_derivative, size_t seed) {
-  CHECK_GE(static_cast<int>(n_segments), 1);
+  // CHECK_GE(static_cast<int>(n_segments), 1);
 
-  CHECK_GT(maximum_derivative, 0);
+  // CHECK_GT(maximum_derivative, 0);
 
   mav_trajectory_generation::Vertex::Vector vertices;
   std::mt19937 generator(seed);
@@ -112,7 +112,7 @@ bool timeEval(int n_segments, double average_distance, size_t seed) {
 }
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
+  // google::InitGoogleLogging(argv[0]);
 
   int n_segments_to_test[4] = {2, 10, 50, 100};
   double average_distance = 5;

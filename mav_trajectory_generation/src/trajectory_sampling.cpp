@@ -26,16 +26,16 @@ const double kNumNanosecondsPerSecond = 1.e9;
 
 bool sampleTrajectoryAtTime(const Trajectory& trajectory, double sample_time,
                             mav_msgs::EigenTrajectoryPoint* state) {
-  CHECK_NOTNULL(state);
+  // CHECK_NOTNULL(state);
   if (sample_time < trajectory.getMinTime() ||
       sample_time > trajectory.getMaxTime()) {
-    LOG(ERROR) << "Sample time should be within [" << trajectory.getMinTime()
-               << " " << trajectory.getMaxTime() << "] but is " << sample_time;
+    // LOG(ERROR) << "Sample time should be within [" << trajectory.getMinTime()
+    //            << " " << trajectory.getMaxTime() << "] but is " << sample_time;
     return false;
   }
 
   if (trajectory.D() < 3) {
-    LOG(ERROR) << "Dimension has to be at least 3, but is " << trajectory.D();
+    // LOG(ERROR) << "Dimension has to be at least 3, but is " << trajectory.D();
     return false;
   }
 
@@ -45,17 +45,17 @@ bool sampleTrajectoryAtTime(const Trajectory& trajectory, double sample_time,
 bool sampleTrajectoryInRange(const Trajectory& trajectory, double min_time,
                              double max_time, double sampling_interval,
                              mav_msgs::EigenTrajectoryPointVector* states) {
-  CHECK_NOTNULL(states);
+  // CHECK_NOTNULL(states);
   if (min_time < trajectory.getMinTime() ||
       max_time > trajectory.getMaxTime()) {
-    LOG(ERROR) << "Sample time should be within [" << trajectory.getMinTime()
-               << " " << trajectory.getMaxTime() << "] but is [" << min_time
-               << " " << max_time << "]";
+    // LOG(ERROR) << "Sample time should be within [" << trajectory.getMinTime()
+    //            << " " << trajectory.getMaxTime() << "] but is [" << min_time
+    //            << " " << max_time << "]";
     return false;
   }
 
   if (trajectory.D() < 3) {
-    LOG(ERROR) << "Dimension has to be at least 3, but is " << trajectory.D();
+    // LOG(ERROR) << "Dimension has to be at least 3, but is " << trajectory.D();
     return false;
   }
 
@@ -128,10 +128,10 @@ bool sampleWholeTrajectory(const Trajectory& trajectory,
 
 bool sampleSegmentAtTime(const Segment& segment, double sample_time,
                          mav_msgs::EigenTrajectoryPoint* state) {
-  CHECK_NOTNULL(state);
+  // CHECK_NOTNULL(state);
   if (sample_time < 0.0 || sample_time > segment.getTime()) {
-    LOG(ERROR) << "Sample time should be within [" << 0.0 << " "
-               << segment.getTime() << "] but is " << sample_time;
+    // LOG(ERROR) << "Sample time should be within [" << 0.0 << " "
+    //            << segment.getTime() << "] but is " << sample_time;
     return false;
   }
 
@@ -142,7 +142,7 @@ template <class T>
 bool sampleFlatStateAtTime(const T& type, double sample_time,
                            mav_msgs::EigenTrajectoryPoint* state) {
   if (type.D() < 3) {
-    LOG(ERROR) << "Dimension has to be 3, 4, or 6 but is " << type.D();
+    // LOG(ERROR) << "Dimension has to be 3, 4, or 6 but is " << type.D();
     return false;
   }
   

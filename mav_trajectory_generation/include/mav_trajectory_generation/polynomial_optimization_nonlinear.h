@@ -22,7 +22,7 @@
 #define MAV_TRAJECTORY_GENERATION_POLYNOMIAL_OPTIMIZATION_NONLINEAR_H_
 
 #include <memory>
-#include <nlopt.hpp>
+// #include <nlopt.hpp>
 
 #include "mav_trajectory_generation/polynomial_optimization_linear.h"
 

@@ -39,12 +39,12 @@ bool Segment::operator==(const Segment& rhs) const {
 }
 
 Polynomial& Segment::operator[](size_t idx) {
-  CHECK_LT(idx, static_cast<size_t>(D_));
+  // CHECK_LT(idx, static_cast<size_t>(D_));
   return polynomials_[idx];
 }
 
 const Polynomial& Segment::operator[](size_t idx) const {
-  CHECK_LT(idx, static_cast<size_t>(D_));
+  // CHECK_LT(idx, static_cast<size_t>(D_));
   return polynomials_[idx];
 }
 
@@ -58,7 +58,7 @@ Eigen::VectorXd Segment::evaluate(double t, int derivative) const {
 }
 
 void printSegment(std::ostream& stream, const Segment& s, int derivative) {
-  CHECK(derivative >= 0 && derivative < s.N());
+  // CHECK(derivative >= 0 && derivative < s.N());
   stream << "t: " << s.getTime() << std::endl;
   stream << " coefficients for " << positionDerivativeToString(derivative)
          << ": " << std::endl;
@@ -84,11 +84,11 @@ bool Segment::computeMinMaxMagnitudeCandidateTimes(
     int derivative, double t_start, double t_end,
     const std::vector<int>& dimensions,
     std::vector<double>* candidate_times) const {
-  CHECK_NOTNULL(candidate_times);
+  // CHECK_NOTNULL(candidate_times);
   candidate_times->clear();
   // Compute magnitude derivative roots.
   if (dimensions.empty()) {
-    LOG(WARNING) << "No dimensions specified." << std::endl;
+    // LOG(WARNING) << "No dimensions specified." << std::endl;
     return false;
   } else if (dimensions.size() > 1) {
     const int n_d = N_ - derivative;
@@ -99,9 +99,9 @@ bool Segment::computeMinMaxMagnitudeCandidateTimes(
     convolved_coefficients.setZero();
     for (int dim : dimensions) {
       if (dim < 0 || dim >= D_) {
-        LOG(WARNING) << "Specified dimensions " << dim
-                     << " are out of bounds [0.." << D_ - 1 << "]."
-                     << std::endl;
+        // LOG(WARNING) << "Specified dimensions " << dim
+        //              << " are out of bounds [0.." << D_ - 1 << "]."
+        //              << std::endl;
         return false;
       }
       // Our coefficients are INCREASING, so when you take the derivative,
@@ -137,7 +137,7 @@ bool Segment::computeMinMaxMagnitudeCandidates(
     int derivative, double t_start, double t_end,
     const std::vector<int>& dimensions,
     std::vector<Extremum>* candidates) const {
-  CHECK_NOTNULL(candidates);
+  // CHECK_NOTNULL(candidates);
   // Find candidate times (roots + start + end).
   std::vector<double> candidate_times;
   computeMinMaxMagnitudeCandidateTimes(derivative, t_start, t_end, dimensions,
@@ -162,10 +162,10 @@ bool Segment::selectMinMaxMagnitudeFromCandidates(
     int derivative, double t_start, double t_end,
     const std::vector<int>& dimensions, const std::vector<Extremum>& candidates,
     Extremum* minimum, Extremum* maximum) const {
-  CHECK_NOTNULL(minimum);
-  CHECK_NOTNULL(maximum);
+  // CHECK_NOTNULL(minimum);
+  // CHECK_NOTNULL(maximum);
   if (t_start > t_end) {
-    LOG(WARNING) << "t_start is greater than t_end.";
+    // LOG(WARNING) << "t_start is greater than t_end.";
     return false;
   }
 
@@ -187,8 +187,8 @@ bool Segment::selectMinMaxMagnitudeFromCandidates(
 bool Segment::getSegmentWithSingleDimension(int dimension,
                                             Segment* new_segment) const {
   if (dimension < 0 || dimension >= D_) {
-    LOG(WARNING)
-        << "You shan't ask for a dimension that does not exist in the segment.";
+    // LOG(WARNING)
+    //     << "You shan't ask for a dimension that does not exist in the segment.";
     return false;
   }
 
@@ -263,7 +263,7 @@ bool Segment::getSegmentWithAppendedDimension(const Segment& segment_to_append,
 
 bool Segment::offsetSegment(const Eigen::VectorXd& A_r_B) {
   if (A_r_B.size() < std::min(D_, 3)) {
-    LOG(WARNING) << "Offset vector size smaller than segment dimension.";
+    // LOG(WARNING) << "Offset vector size smaller than segment dimension.";
     return false;
   }
 
