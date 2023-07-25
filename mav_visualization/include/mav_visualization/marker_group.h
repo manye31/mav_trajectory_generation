@@ -17,8 +17,8 @@
 #ifndef MAV_VISUALIZATION_MARKER_GROUP_H_
 #define MAV_VISUALIZATION_MARKER_GROUP_H_
 
-#include <ros/ros.h>
-#include <visualization_msgs/MarkerArray.h>
+#include "rclcpp/rclcpp.hpp"
+#include <visualization_msgs/msg/marker_array.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <string>
@@ -26,31 +26,32 @@
 
 namespace mav_visualization {
 
-typedef std::vector<visualization_msgs::Marker> MarkerVector;
+typedef std::vector<visualization_msgs::msg::Marker> MarkerVector;
 
 class MarkerGroup {
- public:
-  MarkerGroup();
-  virtual ~MarkerGroup();
-  void getMarkers(visualization_msgs::MarkerArray& marker_array,
-                  const double& scale = 1, bool append = false) const;
-  void getMarkers(MarkerVector& markers, const double& scale = 1,
-                  bool append = false) const;
-  void setNamespace(const std::string& ns);
-  void setHeader(const std_msgs::Header& header);
-  void setHeaderAndNamespace(const std_msgs::Header& header,
-                             const std::string& ns);
-  void setAction(const int32_t& action);
-  void setLifetime(double lifetime);
-  void setFrameLocked(bool locked);
-  void transform(const Eigen::Vector3d& t, const Eigen::Quaterniond& q);
-  void publish(ros::Publisher& pub);
+public:
+    MarkerGroup();
+    virtual ~MarkerGroup();
+    void getMarkers(visualization_msgs::msg::MarkerArray& marker_array,
+                    const double& scale = 1, bool append = false) const;
+    void getMarkers(MarkerVector& markers, const double& scale = 1,
+                    bool append = false) const;
+    void setNamespace(const std::string& ns);
+    void setHeader(const std_msgs::msg::Header& header);
+    void setHeaderAndNamespace(const std_msgs::msg::Header& header,
+                                const std::string& ns);
+    void setAction(const int32_t& action);
+    void setLifetime(double lifetime);
+    void setFrameLocked(bool locked);
+    void transform(const Eigen::Vector3d& t, const Eigen::Quaterniond& q);
+    template <typename T>
+    void publish(const typename rclcpp::Publisher<T>::SharedPtr& pub);
 
  protected:
-  std::string name_;
-  std::string description_;
-  MarkerVector markers_;
-  static void transformMarker(visualization_msgs::Marker& marker,
+    std::string name_;
+    std::string description_;
+    MarkerVector markers_;
+    static void transformMarker(visualization_msgs::msg::Marker& marker,
                               const Eigen::Vector3d& t,
                               const Eigen::Quaterniond& q);
 };

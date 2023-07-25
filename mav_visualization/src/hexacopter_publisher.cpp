@@ -1,54 +1,42 @@
-/*
- * Copyright (c) 2016, Markus Achtelik, ASL, ETH Zurich, Switzerland
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+#include <rclcpp/rclcpp.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 #include "mav_visualization/hexacopter_marker.h"
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "hexacopter_publisher");
-  ros::NodeHandle nh;
-  ros::NodeHandle nh_private("~");
+  rclcpp::init(argc, argv);
+  auto node = rclcpp::Node::make_shared("hexacopter_publisher");
+  auto marker_pub = node->create_publisher<visualization_msgs::msg::MarkerArray>("marker_array", 10);
 
-  ros::Publisher marker_pub =
-      nh_private.advertise<visualization_msgs::MarkerArray>("marker_array", 10,
-                                                            true);
-
-  std::string frame_id("state");
+  std::string frame_id = "state";
   double scale = 1.0;
   bool simple = false;
 
-  nh_private.param("frame_id", frame_id, frame_id);
-  nh_private.param("scale", scale, scale);
-  nh_private.param("simple", simple, simple);
+  node->declare_parameter("frame_id", frame_id);
+  node->declare_parameter("scale", scale);
+  node->declare_parameter("simple", simple);
+
+  node->get_parameter("frame_id", frame_id);
+  node->get_parameter("scale", scale);
+  node->get_parameter("simple", simple);
 
   mav_visualization::HexacopterMarker hex(simple);
-  visualization_msgs::MarkerArray markers;
+  visualization_msgs::msg::MarkerArray markers;
 
   hex.setLifetime(0.0);
-  hex.setAction(visualization_msgs::Marker::ADD);
+  hex.setAction(visualization_msgs::msg::Marker::ADD);
 
-  std_msgs::Header header;
+  std_msgs::msg::Header header;
   header.frame_id = frame_id;
 
-  while (ros::ok()) {
-    header.stamp = ros::Time::now();
+  while (rclcpp::ok()) {
+    header.stamp = rclcpp::Clock().now();
     hex.setHeader(header);
     hex.getMarkers(markers, scale, false);
-    marker_pub.publish(markers);
-    header.seq++;
+    marker_pub->publish(markers);
+    // header.seq++;
 
-    ros::Duration(50.0).sleep();
+    rclcpp::sleep_for(std::chrono::milliseconds(5000));
   }
+
+  return 0;
 }

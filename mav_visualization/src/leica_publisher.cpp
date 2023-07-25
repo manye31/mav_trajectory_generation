@@ -17,36 +17,37 @@
 #include "mav_visualization/leica_marker.h"
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "leica_publisher");
-  ros::NodeHandle nh;
-  ros::NodeHandle nh_private("~");
+  rclcpp::init(argc, argv);
+  auto node = rclcpp::Node::make_shared("leica_publisher");
 
-  ros::Publisher marker_pub =
-      nh_private.advertise<visualization_msgs::MarkerArray>("marker_array", 10,
-                                                            true);
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub =
+      node->create_publisher<visualization_msgs::msg::MarkerArray>("marker_array", 10);
 
-  std::string frame_id("leica");
+  std::string frame_id = "leica";
   double scale = 1.0;
 
-  nh_private.param("frame_id", frame_id, frame_id);
-  nh_private.param("scale", scale, scale);
+  node->declare_parameter("frame_id", frame_id);
+  node->declare_parameter("scale", scale);
+  
+  node->get_parameter("frame_id", frame_id);
+  node->get_parameter("scale", scale);
 
   mav_visualization::LeicaMarker leica;
-  visualization_msgs::MarkerArray markers;
+  visualization_msgs::msg::MarkerArray markers;
 
   leica.setLifetime(0.0);
-  leica.setAction(visualization_msgs::Marker::ADD);
+  leica.setAction(visualization_msgs::msg::Marker::ADD);
 
-  std_msgs::Header header;
+  std_msgs::msg::Header header;
   header.frame_id = frame_id;
 
-  while (ros::ok()) {
-    header.stamp = ros::Time::now();
+  while (rclcpp::ok()) {
+    header.stamp = rclcpp::Clock().now();
     leica.setHeader(header);
     leica.getMarkers(markers, scale, false);
-    marker_pub.publish(markers);
-    ++header.seq;
+    marker_pub->publish(markers);
+    // ++header.seq;
 
-    ros::Duration(5.0).sleep();
+    rclcpp::sleep_for(std::chrono::milliseconds(5000)); 
   }
 }

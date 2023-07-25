@@ -37,7 +37,7 @@ void MarkerGroup::getMarkers(MarkerVector& markers, const double& scale,
     if (scale == 1) {
       markers.push_back(*it);
     } else {
-      visualization_msgs::Marker m = *it;
+      visualization_msgs::msg::Marker m = *it;
       m.pose.position.x *= scale;
       m.pose.position.y *= scale;
       m.pose.position.z *= scale;
@@ -49,7 +49,7 @@ void MarkerGroup::getMarkers(MarkerVector& markers, const double& scale,
   }
 }
 
-void MarkerGroup::getMarkers(visualization_msgs::MarkerArray& marker_array,
+void MarkerGroup::getMarkers(visualization_msgs::msg::MarkerArray& marker_array,
                              const double& scale, bool append) const {
   getMarkers(marker_array.markers, scale, append);
 }
@@ -61,14 +61,14 @@ void MarkerGroup::setNamespace(const std::string& ns) {
   }
 }
 
-void MarkerGroup::setHeader(const std_msgs::Header& header) {
+void MarkerGroup::setHeader(const std_msgs::msg::Header& header) {
   for (MarkerVector::iterator it = markers_.begin(); it < markers_.end();
        it++) {
     it->header = header;
   }
 }
 
-void MarkerGroup::setHeaderAndNamespace(const std_msgs::Header& header,
+void MarkerGroup::setHeaderAndNamespace(const std_msgs::msg::Header& header,
                                         const std::string& ns) {
   for (MarkerVector::iterator it = markers_.begin(); it < markers_.end();
        it++) {
@@ -87,7 +87,7 @@ void MarkerGroup::setAction(const int32_t& action) {
 void MarkerGroup::setLifetime(double lifetime) {
   for (MarkerVector::iterator it = markers_.begin(); it < markers_.end();
        it++) {
-    it->lifetime = ros::Duration(lifetime);
+    it->lifetime = rclcpp::Duration(lifetime);
   }
 }
 
@@ -98,18 +98,19 @@ void MarkerGroup::setFrameLocked(bool locked) {
   }
 }
 
-void MarkerGroup::publish(ros::Publisher& pub) {
+template <typename T>
+void MarkerGroup::publish(const typename rclcpp::Publisher<T>::SharedPtr& pub) {
   for (MarkerVector::iterator it = markers_.begin(); it < markers_.end();
        it++) {
-    pub.publish(*it);
+    pub->publish(*it);
   };
 }
 
-void MarkerGroup::transformMarker(visualization_msgs::Marker& marker,
+void MarkerGroup::transformMarker(visualization_msgs::msg::Marker& marker,
                                   const Eigen::Vector3d& t,
                                   const Eigen::Quaterniond& q) {
-  geometry_msgs::Pose::_orientation_type& mq = marker.pose.orientation;
-  geometry_msgs::Pose::_position_type& mp = marker.pose.position;
+  geometry_msgs::msg::Pose::_orientation_type& mq = marker.pose.orientation;
+  geometry_msgs::msg::Pose::_position_type& mp = marker.pose.position;
 
   Eigen::Quaterniond e_mq(mq.w, mq.x, mq.y, mq.z);
   Eigen::Vector3d e_mp(mp.x, mp.y, mp.z);
