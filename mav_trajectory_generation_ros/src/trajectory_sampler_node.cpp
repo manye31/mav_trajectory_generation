@@ -32,7 +32,7 @@ TrajectorySamplerNode::TrajectorySamplerNode(const rclcpp::NodeOptions & options
     "path_segments", 10,
     std::bind(&TrajectorySamplerNode::pathSegmentsCallback, this,
                 std::placeholders::_1));
-  trajectory4D_sub_ = this->create_subscription<mav_planning_msgs::msg::PolynomialTrajectory>(
+  trajectory4D_sub_ = this->create_subscription<mav_planning_msgs::msg::PolynomialTrajectory4D>(
     "path_segments_4D", 10,
     std::bind(&TrajectorySamplerNode::pathSegments4DCallback, this,
                 std::placeholders::_1));
