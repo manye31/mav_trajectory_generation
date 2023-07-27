@@ -21,8 +21,8 @@
 #ifndef MAV_TRAJECTORY_GENERATION_ROS_FEASIBILITY_BASE_H_
 #define MAV_TRAJECTORY_GENERATION_ROS_FEASIBILITY_BASE_H_
 
-#include <glog/logging.h>
-#include <ros/ros.h>
+// #include <glog/logging.h>
+#include <rclcpp/rclcpp.hpp>
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 
@@ -72,7 +72,7 @@ class HalfPlane {
 
 // A base class for different implementations for dynamic and position
 // feasibility checks.
-class FeasibilityBase {
+class FeasibilityBase : public rclcpp::Node {
  public:
   // Default input constraints, no half plane constraints.
   FeasibilityBase();
@@ -85,7 +85,7 @@ class FeasibilityBase {
   // Checks a segment for input feasibility.
   inline virtual InputFeasibilityResult checkInputFeasibility(
       const Segment& segment) const {
-    ROS_ERROR_STREAM("Input feasibility check not implemented.");
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger("test"), "Input feasibility check not implemented.");
     return InputFeasibilityResult::kInputIndeterminable;
   }
   inline InputConstraints getInputConstraints() const {

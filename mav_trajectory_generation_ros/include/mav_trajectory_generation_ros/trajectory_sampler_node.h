@@ -24,49 +24,45 @@
 #include <mav_msgs/conversions.h>
 #include <mav_msgs/default_topics.h>
 #include <mav_msgs/eigen_mav_msgs.h>
-#include <mav_planning_msgs/PolynomialSegment.h>
-#include <mav_planning_msgs/PolynomialTrajectory.h>
-#include <ros/ros.h>
-#include <std_srvs/Empty.h>
-#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+#include <mav_planning_msgs/msg/polynomial_segment.hpp>
+#include <mav_planning_msgs/msg/polynomial_trajectory.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <std_srvs/srv/empty.hpp>
+#include <trajectory_msgs/msg/multi_dof_joint_trajectory.hpp>
 
 #include <mav_trajectory_generation/polynomial.h>
 #include <mav_trajectory_generation/trajectory_sampling.h>
 #include <mav_trajectory_generation_ros/ros_conversions.h>
 
 // deprecated
-#include <mav_planning_msgs/PolynomialSegment4D.h>
-#include <mav_planning_msgs/PolynomialTrajectory4D.h>
+#include <mav_planning_msgs/msg/polynomial_segment4_d.h>
+#include <mav_planning_msgs/msg/polynomial_trajectory4_d.h>
 
-class TrajectorySamplerNode {
+class TrajectorySamplerNode : public rclcpp::Node {
  public:
-  TrajectorySamplerNode(const ros::NodeHandle& nh,
-                        const ros::NodeHandle& nh_private);
+  TrajectorySamplerNode(const rclcpp::NodeOptions & options);
   ~TrajectorySamplerNode();
 
  private:
   void pathSegmentsCallback(
-      const mav_planning_msgs::PolynomialTrajectory& segments_message);
+      const mav_planning_msgs::msg::PolynomialTrajectory::SharedPtr segments_message);
   void pathSegments4DCallback(
-      const mav_planning_msgs::PolynomialTrajectory4D& segments_message);
-  bool stopSamplingCallback(std_srvs::Empty::Request& request,
-                            std_srvs::Empty::Response& response);
-  void commandTimerCallback(const ros::TimerEvent&);
+      const mav_planning_msgs::msg::PolynomialTrajectory4D::SharedPtr segments_message);
+  bool stopSamplingCallback(const std_srvs::srv::Empty::Request::SharedPtr request,
+                            std_srvs::srv::Empty::Response::SharedPtr response);
+  void commandExecute();
   void processTrajectory();
 
-  ros::NodeHandle nh_;
-  ros::NodeHandle nh_private_;
-
-  ros::Timer publish_timer_;
-  ros::Subscriber trajectory_sub_;
-  ros::Subscriber trajectory4D_sub_;
-  ros::Publisher command_pub_;
-  ros::ServiceServer stop_srv_;
-  ros::Time start_time_;
+  rclcpp::TimerBase::SharedPtr publish_timer_;
+  rclcpp::Subscription<mav_planning_msgs::msg::PolynomialTrajectory>::SharedPtr trajectory_sub_;
+  rclcpp::Subscription<mav_planning_msgs::msg::PolynomialTrajectory4D>::SharedPtr trajectory4D_sub_;
+  rclcpp::Publisher<trajectory_msgs::msg::MultiDOFJointTrajectory>::SharedPtr command_pub_;
+  rclcpp::Service<std_srvs::srv::Empty>::SharedPtr stop_srv_;
+  rclcpp::Time start_time_;
 
   // Service client for getting the MAV interface to listen to our sent
   // commands.
-  ros::ServiceClient position_hold_client_;
+  rclcpp::Client<std_srvs::srv::Empty>::SharedPtr position_hold_client_;
 
   // Flag whether to publish entire trajectory at once or not.
   bool publish_whole_trajectory_;

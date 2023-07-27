@@ -188,7 +188,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
 
   // Run all the evaluations.
   std::string method_name = "nfabian";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_nfabian;
   timing::Timer timer_nfabian(method_name);
@@ -206,7 +206,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
   }
 
   method_name = "trapezoidal";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_trapezoidal;
   timing::Timer timer_trapezoidal(method_name);
@@ -224,7 +224,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
   }
 
   method_name = "segment_violation_scaling";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_segment_violation_scaling;
   timing::Timer timer_segment_violation_scaling(method_name);
@@ -243,7 +243,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
   }
 
   method_name = "nonlinear_time_only";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_nonlinear_time;
   timing::Timer timer_nonlinear_time(method_name);
@@ -261,7 +261,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
   }
 
   method_name = "nonlinear";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_nonlinear;
   timing::Timer timer_nonlinear(method_name);
@@ -279,7 +279,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
   }
 
   method_name = "nonlinear_richter";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_nonlinear_richter;
   timing::Timer timer_nonlinear_richter(method_name);
@@ -297,7 +297,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
   }
 
   method_name = "mellinger_outer_loop";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_mellinger_outer_loop;
   timing::Timer timer_mellinger(method_name);
@@ -315,7 +315,7 @@ void TimeEvaluationNode::runBenchmark(int trial_number, int num_segments) {
   }
 
   method_name = "mellinger_outer_loop_trapezoidal_init";
-  ROS_INFO_STREAM("Trial " << trial_number << " Segments " << num_segments
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Trial " << trial_number << " Segments " << num_segments
                            << " Starting evaluation: " << method_name);
   Trajectory trajectory_mellinger_outer_loop_trapezoidal_init;
   timing::Timer timer_mellinger_trapezoidal(method_name);
@@ -511,8 +511,8 @@ int TimeEvaluationNode::runSegmentViolationScalingTime(
                                  0.0)
               << std::endl;
   }
-  CHECK_EQ(segment_times.size(), maxima_vel.size());
-  CHECK_EQ(segment_times.size(), maxima_acc.size());
+  // CHECK_EQ(segment_times.size(), maxima_vel.size());
+  // CHECK_EQ(segment_times.size(), maxima_acc.size());
 
   // Scale segment times according to violation
   for (int i = 0; i < segment_times.size(); ++i) {
@@ -652,7 +652,7 @@ void TimeEvaluationNode::evaluateTrajectory(
   success &= traj.computeMinMaxMagnitude(
       derivative_order::ACCELERATION, dimensions, &a_min_actual, &a_max_actual);
   if (!success) {
-    ROS_ERROR("CAN'T COMPUTE EXTERMA!!!!");
+    RCLCPP_ERROR(rclcpp::get_logger("time_eval"), "CAN'T COMPUTE EXTERMA!!!!");
   }
   double v_max = 0.0;
   double a_max = 0.0;
@@ -724,7 +724,7 @@ bool TimeEvaluationNode::computeMinMaxMagnitudeAllSegments(
     if (!segments[segment_idx].computeMinMaxMagnitudeCandidates(
             derivative, 0.0, segments[segment_idx].getTime(), dimensions,
             &candidates)) {
-      ROS_WARN("Failed to get candidates for segment: %d", segment_idx);
+      RCLCPP_WARN(rclcpp::get_logger("time_eval"), "Failed to get candidates for segment: %d", segment_idx);
       return false;
     }
     // Evaluate candidates.
@@ -732,7 +732,7 @@ bool TimeEvaluationNode::computeMinMaxMagnitudeAllSegments(
     if (!segments[segment_idx].selectMinMaxMagnitudeFromCandidates(
             derivative, 0.0, segments[segment_idx].getTime(), dimensions,
             candidates, &minimum_candidate, &maximum_candidate)) {
-      ROS_WARN("Failed select min/max for segment: %d", segment_idx);
+      RCLCPP_WARN(rclcpp::get_logger("time_eval"), "Failed select min/max for segment: %d", segment_idx);
       return false;
     }
     maxima->push_back(maximum_candidate);
@@ -841,7 +841,7 @@ void TimeEvaluationNode::outputResultsToFile(
   fprintf(fp, "%s", results.c_str());
   fclose(fp);
 
-  ROS_INFO("Output results to: %s", filename.c_str());
+  RCLCPP_INFO(rclcpp::get_logger("time_eval"), "Output results to: %s", filename.c_str());
 }
 
 }  // namespace mav_trajectory_generation
@@ -856,7 +856,7 @@ int main(int argc, char** argv) {
 
   mav_trajectory_generation::TimeEvaluationNode time_eval_node(nh, nh_private);
 
-  ROS_INFO("Initialized time evaluation node.");
+  RCLCPP_INFO(rclcpp::get_logger("time_eval"), "Initialized time evaluation node.");
 
   int num_trial_per_num_segments = 5;
   std::vector<int> num_segments_vector = {1, 2, 5, 10, 20, 30, 40, 50};
@@ -869,7 +869,7 @@ int main(int argc, char** argv) {
 
   for (int i = 0; i < num_segments_vector.size(); ++i) {
     for (int j = 0; j < num_trial_per_num_segments; ++j) {
-      ROS_INFO("Trial number %d Num segments: %d", trial_number,
+      RCLCPP_INFO(rclcpp::get_logger("time_eval"), "Trial number %d Num segments: %d", trial_number,
                num_segments_vector[i]);
       std::srand(trial_number);
       time_eval_node.runBenchmark(trial_number, num_segments_vector[i]);
@@ -880,14 +880,14 @@ int main(int argc, char** argv) {
         ros::spinOnce();
       }
       if (!ros::ok()) {
-        ROS_ERROR("Aborted early.");
+        RCLCPP_ERROR(rclcpp::get_logger("time_eval"), "Aborted early.");
         return 1;
       }
     }
   }
 
-  ROS_INFO("Finished evaluations.");
-  ROS_INFO_STREAM("Results:\n" << time_eval_node.outputResultsToString().c_str()
+  RCLCPP_INFO(rclcpp::get_logger("time_eval"), "Finished evaluations.");
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("time_eval"), "Results:\n" << time_eval_node.outputResultsToString().c_str()
                                << std::endl);
 
   if (!output_path.empty()) {

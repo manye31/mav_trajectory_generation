@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-#include <eigen_conversions/eigen_msg.h>
+// #include <eigen_conversions/eigen_msg.h>
 #include <mav_msgs/conversions.h>
 #include <mav_visualization/helpers.h>
 
@@ -30,12 +30,12 @@ namespace mav_trajectory_generation {
 // Declare/define some internal functions that we don't want to expose.
 namespace internal {
 
-void appendMarkers(const visualization_msgs::MarkerArray& markers_to_insert,
+void appendMarkers(const visualization_msgs::msg::MarkerArray& markers_to_insert,
                    const std::string& marker_namespace,
-                   visualization_msgs::MarkerArray* marker_array) {
+                   visualization_msgs::msg::MarkerArray* marker_array) {
   marker_array->markers.reserve(marker_array->markers.size() +
                                 markers_to_insert.markers.size());
-  for (const visualization_msgs::Marker& marker : markers_to_insert.markers) {
+  for (const visualization_msgs::msg::Marker& marker : markers_to_insert.markers) {
     marker_array->markers.push_back(marker);
     if (!marker_namespace.empty()) {
       marker_array->markers.back().ns = marker_namespace;
@@ -44,16 +44,16 @@ void appendMarkers(const visualization_msgs::MarkerArray& markers_to_insert,
 }
 
 // Overwrites the given properties of the marker array.
-void setMarkerProperties(const std_msgs::Header& header, double life_time,
-                         const visualization_msgs::Marker::_action_type& action,
-                         visualization_msgs::MarkerArray* markers) {
-  CHECK_NOTNULL(markers);
+void setMarkerProperties(const std_msgs::msg::Header& header, double life_time,
+                         const visualization_msgs::msg::Marker::_action_type& action,
+                         visualization_msgs::msg::MarkerArray* markers) {
+  // CHECK_NOTNULL(markers);
   int count = 0;
-  for (visualization_msgs::Marker& marker : markers->markers) {
+  for (visualization_msgs::msg::Marker& marker : markers->markers) {
     marker.header = header;
     marker.action = action;
     marker.id = count;
-    marker.lifetime = ros::Duration(life_time);
+    marker.lifetime = rclcpp::Duration(life_time);
     ++count;
   }
 }
@@ -64,7 +64,7 @@ static constexpr double kDefaultSamplingTime = 0.1;
 
 void drawMavTrajectory(const Trajectory& trajectory, double distance,
                        const std::string& frame_id,
-                       visualization_msgs::MarkerArray* marker_array) {
+                       visualization_msgs::msg::MarkerArray* marker_array) {
   // This is just an empty extra marker that doesn't draw anything.
   mav_visualization::MarkerGroup dummy_marker;
   return drawMavTrajectoryWithMavMarker(trajectory, distance, frame_id,
@@ -73,7 +73,7 @@ void drawMavTrajectory(const Trajectory& trajectory, double distance,
 
 void drawMavSampledTrajectorybyTime(
     const mav_msgs::EigenTrajectoryPoint::Vector& trajectory_points, double dt,
-    const std::string& frame_id, visualization_msgs::MarkerArray* marker_array){
+    const std::string& frame_id, visualization_msgs::msg::MarkerArray* marker_array){
 
       mav_msgs::EigenTrajectoryPointVector filtered_vector;
       uint32_t dt_ns = ((uint32_t)(dt * 1e9));
@@ -101,7 +101,7 @@ void drawMavSampledTrajectorybyTime(
 void drawMavSampledTrajectory(
     const mav_msgs::EigenTrajectoryPoint::Vector& trajectory_points, double distance,
     const std::string& frame_id,
-    visualization_msgs::MarkerArray* marker_array) {
+    visualization_msgs::msg::MarkerArray* marker_array) {
   // This is just an empty extra marker that doesn't draw anything.
   mav_visualization::MarkerGroup dummy_marker;
   return drawMavSampledTrajectoryWithMavMarker(trajectory_points, distance, frame_id,
@@ -111,7 +111,7 @@ void drawMavSampledTrajectory(
 void drawMavTrajectoryWithMavMarker(
     const Trajectory& trajectory, double distance, const std::string& frame_id,
     const mav_visualization::MarkerGroup& additional_marker,
-    visualization_msgs::MarkerArray* marker_array) {
+    visualization_msgs::msg::MarkerArray* marker_array) {
   // Sample the trajectory.
   mav_msgs::EigenTrajectoryPoint::Vector trajectory_points;
 
@@ -129,12 +129,12 @@ void drawMavSampledTrajectoryWithMavMarker(
     const mav_msgs::EigenTrajectoryPoint::Vector& trajectory_points, double distance,
     const std::string& frame_id,
     const mav_visualization::MarkerGroup& additional_marker,
-    visualization_msgs::MarkerArray* marker_array) {
-  CHECK_NOTNULL(marker_array);
+    visualization_msgs::msg::MarkerArray* marker_array) {
+  // CHECK_NOTNULL(marker_array);
   marker_array->markers.clear();
 
-  visualization_msgs::Marker line_strip;
-  line_strip.type = visualization_msgs::Marker::LINE_STRIP;
+  visualization_msgs::msg::Marker line_strip;
+  line_strip.type = visualization_msgs::msg::Marker::LINE_STRIP;
   line_strip.color = mav_visualization::Color::Orange();
   line_strip.scale.x = 0.01;
   line_strip.ns = "path";
@@ -151,13 +151,13 @@ void drawMavSampledTrajectoryWithMavMarker(
       mav_msgs::EigenMavStateFromEigenTrajectoryPoint(trajectory_point, &mav_state);
       mav_state.orientation_W_B = trajectory_point.orientation_W_B;
 
-      visualization_msgs::MarkerArray axes_arrows;
+      visualization_msgs::msg::MarkerArray axes_arrows;
       mav_visualization::drawAxesArrows(mav_state.position_W,
                                         mav_state.orientation_W_B, 0.3, 0.3,
                                         &axes_arrows);
       internal::appendMarkers(axes_arrows, "pose", marker_array);
 
-      visualization_msgs::Marker arrow;
+      visualization_msgs::msg::Marker arrow;
       mav_visualization::drawArrowPoints(
           trajectory_point.position_W,
           trajectory_point.position_W + trajectory_point.acceleration_W,
@@ -180,33 +180,35 @@ void drawMavSampledTrajectoryWithMavMarker(
       tmp_marker.getMarkers(marker_array->markers, 1.0, true);
     }
     last_position = trajectory_point.position_W;
-    geometry_msgs::Point last_position_msg;
-    tf::pointEigenToMsg(last_position, last_position_msg);
+    geometry_msgs::msg::Point last_position_msg;
+    last_position_msg.x = last_position(0);
+    last_position_msg.y = last_position(1);
+    last_position_msg.z = last_position(2);
     line_strip.points.push_back(last_position_msg);
   }
   marker_array->markers.push_back(line_strip);
 
-  std_msgs::Header header;
+  std_msgs::msg::Header header;
   header.frame_id = frame_id;
-  header.stamp = ros::Time::now();
-  internal::setMarkerProperties(header, 0.0, visualization_msgs::Marker::ADD,
+  header.stamp = rclcpp::Clock().now();
+  internal::setMarkerProperties(header, 0.0, visualization_msgs::msg::Marker::ADD,
                                 marker_array);
 }
 
 void drawVertices(const Vertex::Vector& vertices, const std::string& frame_id,
-                  visualization_msgs::MarkerArray* marker_array) {
-  CHECK_NOTNULL(marker_array);
+                  visualization_msgs::msg::MarkerArray* marker_array) {
+  // CHECK_NOTNULL(marker_array);
   marker_array->markers.resize(1);
-  visualization_msgs::Marker& marker = marker_array->markers.front();
+  visualization_msgs::msg::Marker& marker = marker_array->markers.front();
 
-  marker.type = visualization_msgs::Marker::LINE_STRIP;
+  marker.type = visualization_msgs::msg::Marker::LINE_STRIP;
   marker.color = mav_visualization::Color::Green();
   marker.scale.x = 0.01;
   marker.ns = "straight_path";
 
   for (const Vertex& vertex : vertices) {
     if (vertex.D() != 3) {
-      ROS_ERROR("Vertex has dimension %d but should have dimension 3.",
+      RCLCPP_ERROR(rclcpp::get_logger("viz"), "Vertex has dimension %d but should have dimension 3.",
                 vertex.D());
       return;
     }
@@ -214,28 +216,30 @@ void drawVertices(const Vertex::Vector& vertices, const std::string& frame_id,
     if (vertex.hasConstraint(derivative_order::POSITION)) {
       Eigen::VectorXd position = Eigen::Vector3d::Zero();
       vertex.getConstraint(derivative_order::POSITION, &position);
-      geometry_msgs::Point constraint_msg;
-      tf::pointEigenToMsg(position, constraint_msg);
+      geometry_msgs::msg::Point constraint_msg;
+      constraint_msg.x = position(0);
+      constraint_msg.y = position(1);
+      constraint_msg.z = position(2);
       marker.points.push_back(constraint_msg);
     } else
-      ROS_WARN("Vertex does not have a position constraint, skipping.");
+      RCLCPP_WARN(rclcpp::get_logger("viz"), "Vertex does not have a position constraint, skipping.");
   }
 
-  std_msgs::Header header;
+  std_msgs::msg::Header header;
   header.frame_id = frame_id;
-  header.stamp = ros::Time::now();
-  internal::setMarkerProperties(header, 0.0, visualization_msgs::Marker::ADD,
+  header.stamp = rclcpp::Clock().now();
+  internal::setMarkerProperties(header, 0.0, visualization_msgs::msg::Marker::ADD,
                                 marker_array);
 }
 
 void drawVerticesFromTrajectory(const Trajectory& trajectory,
                                 const std::string& frame_id,
-                                visualization_msgs::MarkerArray* marker_array) {
-  CHECK_NOTNULL(marker_array);
+                                visualization_msgs::msg::MarkerArray* marker_array) {
+  // CHECK_NOTNULL(marker_array);
 
   std::vector<double> segment_times = trajectory.getSegmentTimes();
   if (segment_times.empty()) {
-    ROS_WARN("Empty trajectory.");
+    RCLCPP_WARN(rclcpp::get_logger("viz"), "Empty trajectory.");
     return;
   }
   Vertex::Vector vertices(segment_times.size() + 1, trajectory.D());

@@ -23,7 +23,7 @@
 
 #include <mav_msgs/eigen_mav_msgs.h>
 #include <mav_visualization/marker_group.h>
-#include <visualization_msgs/MarkerArray.h>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 #include <mav_trajectory_generation/trajectory.h>
 #include <mav_trajectory_generation/vertex.h>
@@ -34,41 +34,41 @@ namespace mav_trajectory_generation {
 // If distance = 0.0, then these additional markers are disabled.
 void drawMavTrajectory(const Trajectory& trajectory, double distance,
                        const std::string& frame_id,
-                       visualization_msgs::MarkerArray* marker_array);
+                       visualization_msgs::msg::MarkerArray* marker_array);
 
 // Draw an eigen trajectory with additional markers spaced by distance (0.0 to
 // disable).
 void drawMavSampledTrajectory(
     const mav_msgs::EigenTrajectoryPoint::Vector& trajectory_points, double distance,
-    const std::string& frame_id, visualization_msgs::MarkerArray* marker_array);
+    const std::string& frame_id, visualization_msgs::msg::MarkerArray* marker_array);
 
 // Draw an eigen trajectory with markers that are a minimum of dt apart in time.
 void drawMavSampledTrajectorybyTime(
     const mav_msgs::EigenTrajectoryPoint::Vector& trajectory_points, double dt,
-    const std::string& frame_id, visualization_msgs::MarkerArray* marker_array);
+    const std::string& frame_id, visualization_msgs::msg::MarkerArray* marker_array);
 
 // Same as drawMavTrajectory, but also draws an additional marker at a set
 // distance.
 void drawMavTrajectoryWithMavMarker(
     const Trajectory& trajectory, double distance, const std::string& frame_id,
     const mav_visualization::MarkerGroup& additional_marker,
-    visualization_msgs::MarkerArray* marker_array);
+    visualization_msgs::msg::MarkerArray* marker_array);
 
 // Draw a eigen trajectory with additional marker.
 void drawMavSampledTrajectoryWithMavMarker(
     const mav_msgs::EigenTrajectoryPoint::Vector& trajectory_points, double distance,
     const std::string& frame_id,
     const mav_visualization::MarkerGroup& additional_marker,
-    visualization_msgs::MarkerArray* marker_array);
+    visualization_msgs::msg::MarkerArray* marker_array);
 
 // Visualize original vertices.
 void drawVertices(const Vertex::Vector& vertices, const std::string& frame_id,
-                  visualization_msgs::MarkerArray* marker_array);
+                  visualization_msgs::msg::MarkerArray* marker_array);
 
 // Visualize orginal vertices from trajectory.
 void drawVerticesFromTrajectory(const Trajectory& trajectory,
                                 const std::string& frame_id,
-                                visualization_msgs::MarkerArray* marker_array);
+                                visualization_msgs::msg::MarkerArray* marker_array);
 
 }  // namespace mav_trajectory_generation
 

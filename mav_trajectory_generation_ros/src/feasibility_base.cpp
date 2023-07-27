@@ -54,14 +54,14 @@ std::string getInputFeasibilityResultName(InputFeasibilityResult fr) {
 HalfPlane::HalfPlane(const Eigen::Vector3d& point,
                      const Eigen::Vector3d& normal)
     : point(point), normal(normal) {
-  CHECK_GT(normal.norm(), 0.0) << "Invalid normal.";
+  // CHECK_GT(normal.norm(), 0.0) << "Invalid normal.";
   this->normal.normalize();
 }
 
 HalfPlane::HalfPlane(const Eigen::Vector3d& a, const Eigen::Vector3d& b,
                      const Eigen::Vector3d& c) {
-  CHECK_NE(a, b);
-  CHECK_NE(a, c);
+  // CHECK_NE(a, b);
+  // CHECK_NE(a, c);
   point = a;
   normal = (b - a).cross(c - a).normalized();
 }
@@ -86,11 +86,13 @@ HalfPlane::Vector HalfPlane::createBoundingBox(
 }
 
 FeasibilityBase::FeasibilityBase()
-    : gravity_((Eigen::Vector3d() << 0.0, 0.0, mav_msgs::kGravity).finished()) {
+    : rclcpp::Node("test_node"),
+      gravity_((Eigen::Vector3d() << 0.0, 0.0, mav_msgs::kGravity).finished()) {
 }
 
 FeasibilityBase::FeasibilityBase(const InputConstraints& input_constraints)
-    : input_constraints_(input_constraints),
+    : rclcpp::Node("test_node"),
+      input_constraints_(input_constraints),
       gravity_((Eigen::Vector3d() << 0.0, 0.0, mav_msgs::kGravity).finished()) {
 }
 
@@ -119,9 +121,9 @@ bool FeasibilityBase::checkHalfPlaneFeasibility(
 bool FeasibilityBase::checkHalfPlaneFeasibility(const Segment& segment) const {
   // Check user input.
   if (!(segment.D() == 3 || segment.D() == 4)) {
-    LOG(WARNING) << "Feasibility check only implemented for segment dimensions "
-                    "3 and 4. Got dimension "
-                 << segment.D() << ".";
+    // LOG(WARNING) << "Feasibility check only implemented for segment dimensions "
+    //                 "3 and 4. Got dimension "
+    //              << segment.D() << ".";
     return false;
   }
 

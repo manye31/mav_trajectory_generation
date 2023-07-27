@@ -20,7 +20,7 @@
 
 #include <cmath>
 
-#include <glog/logging.h>
+// #include <glog/logging.h>
 #include <yaml-cpp/yaml.h>
 
 #include <mav_msgs/default_values.h>
@@ -53,7 +53,7 @@ void InputConstraints::setDefaultValues() {
 }
 
 bool InputConstraints::getConstraint(int constraint_type, double* value) const {
-  CHECK_NOTNULL(value);
+  // CHECK_NOTNULL(value);
   std::map<int, double>::const_iterator it = constraints_.find(constraint_type);
   if (it != constraints_.end()) {
     *value = it->second;
