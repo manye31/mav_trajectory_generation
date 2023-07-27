@@ -16,12 +16,14 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 set(CMAKE_MACOSX_RPATH 0)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON) 
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 3.3 REQUIRED)
 
 # Include directories
 include_directories(
@@ -33,11 +35,13 @@ add_library(${PROJECT_NAME}
   src/marker_group.cpp
   src/leica_marker.cpp
   src/hexacopter_marker.cpp
+  include/mav_visualization/helpers.h
 )
 
+# This is stupid
 ament_target_dependencies(${PROJECT_NAME}
   rclcpp
-  visualization_msgs
+  std_msgs
 )
 
 target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
@@ -45,11 +49,11 @@ target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
 # Add executables
 add_executable(hexacopter_publisher src/hexacopter_publisher.cpp)
 target_link_libraries(hexacopter_publisher ${PROJECT_NAME})
-ament_target_dependencies(hexacopter_publisher rclcpp)
+ament_target_dependencies(hexacopter_publisher rclcpp visualization_msgs std_msgs)
 
 add_executable(leica_publisher src/leica_publisher.cpp)
 target_link_libraries(leica_publisher ${PROJECT_NAME})
-ament_target_dependencies(leica_publisher rclcpp)
+ament_target_dependencies(leica_publisher rclcpp visualization_msgs std_msgs)
 
 # Install exported libraries
 ament_export_dependencies(Eigen3)

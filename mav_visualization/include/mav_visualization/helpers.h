@@ -20,10 +20,11 @@
 
 #include <Eigen/Eigenvalues>
 
-#include <eigen_conversions/eigen_msg.hpp>
-#include <std_msgs/msg/ColorRGBA.hpp>
+#include <std_msgs/msg/color_rgba.hpp>
+#include "geometry_msgs/msg/point.hpp"
+#include "geometry_msgs/msg/vector3.hpp"
+#include "geometry_msgs/msg/quaternion.hpp"
 #include <visualization_msgs/msg/marker_array.hpp>
-
 namespace mav_visualization {
 
 class Color : public std_msgs::msg::ColorRGBA {
@@ -60,6 +61,31 @@ inline geometry_msgs::msg::Point createPoint(double x, double y, double z) {
   return p;
 }
 
+inline geometry_msgs::msg::Point toPointMsg(const Eigen::Vector3d& v) {
+  geometry_msgs::msg::Point msg;
+  msg.x = v.x();
+  msg.y = v.y();
+  msg.z = v.z();
+  return msg;
+}
+
+inline geometry_msgs::msg::Vector3 toVec3Msg(const Eigen::Vector3d& v) {
+  geometry_msgs::msg::Vector3 msg;
+  msg.x = v.x();
+  msg.y = v.y();
+  msg.z = v.z();
+  return msg;
+}
+
+inline geometry_msgs::msg::Quaternion toQuatMsg(const Eigen::Quaterniond& q) {
+  geometry_msgs::msg::Quaternion msg;
+  msg.x = q.x();
+  msg.y = q.y();
+  msg.z = q.z();
+  msg.w = q.w();
+  return msg;
+}
+
 // Draws a covariance ellipsoid
 // Input: mu = static 3 element vector, specifying the ellipsoid center
 // Input: cov = static 3x3 covariance matrix
@@ -79,9 +105,9 @@ inline void drawCovariance3D(const Eigen::Vector3d& mu,
   V.col(2) = V.col(0).cross(V.col(1));
   const Eigen::Vector3d sigma = solver.eigenvalues().cwiseSqrt() * n_sigma;
 
-  tf::pointEigenToMsg(mu, marker->pose.position);
-  tf::quaternionEigenToMsg(Eigen::Quaterniond(V), marker->pose.orientation);
-  tf::vectorEigenToMsg(sigma * 2.0, marker->scale);  // diameter, not half axis
+  marker->pose.position = toPointMsg(mu);
+  marker->pose.orientation = toQuatMsg(Eigen::Quaterniond(V));
+  marker->scale = toVec3Msg(sigma * 2.0);  // diameter, not half axis
   marker->type = visualization_msgs::msg::Marker::SPHERE;
   marker->color = color;
   marker->action = visualization_msgs::msg::Marker::ADD;
@@ -111,8 +137,8 @@ inline void drawAxes(const Eigen::Vector3d& p, const Eigen::Quaterniond& q,
   marker->type = visualization_msgs::msg::Marker::LINE_LIST;
   marker->action = visualization_msgs::msg::Marker::ADD;
 
-  tf::pointEigenToMsg(p, marker->pose.position);
-  tf::quaternionEigenToMsg(q, marker->pose.orientation);
+  marker->pose.position = toPointMsg(p);
+  marker->pose.orientation = toQuatMsg(q);
 }
 
 inline void drawArrowPositionOrientation(const Eigen::Vector3d& p,
@@ -124,8 +150,8 @@ inline void drawArrowPositionOrientation(const Eigen::Vector3d& p,
   marker->action = visualization_msgs::msg::Marker::ADD;
   marker->color = color;
 
-  tf::pointEigenToMsg(p, marker->pose.position);
-  tf::quaternionEigenToMsg(q, marker->pose.orientation);
+  marker->pose.position = toPointMsg(p);
+  marker->pose.orientation = toQuatMsg(q);
 
   marker->scale.x = length;
   marker->scale.y = diameter;
@@ -141,8 +167,8 @@ inline void drawArrowPoints(const Eigen::Vector3d& p1,
   marker->color = color;
 
   marker->points.resize(2);
-  tf::pointEigenToMsg(p1, marker->points[0]);
-  tf::pointEigenToMsg(p2, marker->points[1]);
+  marker->points[0] = toPointMsg(p1);
+  marker->points[1] = toPointMsg(p2);
 
   marker->scale.x = diameter * 0.1;
   marker->scale.y = diameter * 2 * 0.1;
