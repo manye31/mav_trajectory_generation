@@ -59,6 +59,7 @@ Eigen::VectorXd Trajectory::evaluate(double t, int derivative_order) const {
     // in case t_start falls on a vertex, the iterator right of the vertex is
     // chosen, hence accumulated_segment_time_ns > t_start
     if (accumulated_time > t) {
+      std::cout << "segment " << i << std::endl;
       break;
     }
   }

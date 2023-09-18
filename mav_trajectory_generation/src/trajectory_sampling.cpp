@@ -29,8 +29,8 @@ bool sampleTrajectoryAtTime(const Trajectory& trajectory, double sample_time,
   // CHECK_NOTNULL(state);
   if (sample_time < trajectory.getMinTime() ||
       sample_time > trajectory.getMaxTime()) {
-    // LOG(ERROR) << "Sample time should be within [" << trajectory.getMinTime()
-    //            << " " << trajectory.getMaxTime() << "] but is " << sample_time;
+    std::cout << "Sample time should be within [" << trajectory.getMinTime()
+               << " " << trajectory.getMaxTime() << "] but is " << sample_time;
     return false;
   }
 

@@ -31,3 +31,7 @@ The following image visualizes the node graph of the simulation:
 
 # Note
 Please note that waiting for console input is not the proper way to trigger trajectory generation. Depending on your use case, the planner should be triggered by services or based on information of other messages that it subscribes to etc.
+
+```
+ros2 run mav_trajectory_generation_example trajectory_generation_readme_example --ros-args --remap trajectory:=path_segments_4D
+```

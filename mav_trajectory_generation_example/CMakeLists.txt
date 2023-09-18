@@ -47,10 +47,10 @@ ament_target_dependencies(trajectory_generation_readme_example visualization_msg
                           mav_trajectory_generation_ros mav_visualization mav_planning_msgs)
 
 # Install directories
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
+# install(
+#   DIRECTORY include/
+#   DESTINATION include
+# )
 
 install(DIRECTORY
   config launch

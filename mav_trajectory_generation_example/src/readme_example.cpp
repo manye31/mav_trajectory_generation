@@ -30,6 +30,7 @@ public:
     : Node(options.arguments()[0], options) {
         //! QoS Policies
         rclcpp::QoS qos = rclcpp::QoS(10);
+        qos.transient_local();
 
         //! Subs and Pubs
         pub_markers_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
@@ -56,27 +57,40 @@ public:
         const int derivative_to_optimize = mav_trajectory_generation::derivative_order::SNAP;
         mav_trajectory_generation::Vertex start(dimension), middle(dimension), end(dimension);
 
-        start.makeStartOrEnd(Eigen::Vector3d(0,0,1), derivative_to_optimize);
+        Eigen::Vector3d offset = Eigen::Vector3d(-55.76239, -108.93427, 0.159-0.07);
+        start.makeStartOrEnd(Eigen::Vector3d(-55.76239, -108.93427, 0.159) - offset, derivative_to_optimize);
         vertices.push_back(start);
 
-        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(1,2,3));
-        middle.addConstraint(mav_trajectory_generation::derivative_order::VELOCITY, Eigen::Vector3d(0,0,1));
+        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(-52, -107, 1) - offset);
+        // middle.addConstraint(mav_trajectory_generation::derivative_order::VELOCITY, Eigen::Vector3d(3,3,1));
         vertices.push_back(middle);
 
-        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(1,-2,3));
+        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(-48.7, -104, 0.84) - offset);
+        // middle.addConstraint(mav_trajectory_generation::derivative_order::VELOCITY, Eigen::Vector3d(1,-2,-.5));
         vertices.push_back(middle);
 
-        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(3,-1, 4));
+        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(-46.7, -100, 2.4) - offset);
         vertices.push_back(middle);
 
-        end.makeStartOrEnd(Eigen::Vector3d(2,1,5), derivative_to_optimize);
+        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(-43, -100, 1.5) - offset);
+        vertices.push_back(middle);
+
+        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(-42.5, -102, 1.7) - offset);
+        // middle.addConstraint(mav_trajectory_generation::derivative_order::VELOCITY, Eigen::Vector3d(1,-2,1));
+        vertices.push_back(middle);
+
+        middle.addConstraint(mav_trajectory_generation::derivative_order::POSITION, Eigen::Vector3d(-37.7, -101.5, 2.03) - offset);
+        // middle.addConstraint(mav_trajectory_generation::derivative_order::VELOCITY, Eigen::Vector3d(6,6,0));
+        vertices.push_back(middle);
+
+        end.makeStartOrEnd(Eigen::Vector3d(-33.96, -101.5, 2.94) - offset, derivative_to_optimize);
         vertices.push_back(end);
 
         //! Compute segment times
         std::vector<double> segment_times;
-        const double v_max = 2.0;
-        const double a_max = 2.0;
-        segment_times = estimateSegmentTimes(vertices, v_max, a_max);
+        const double v_max = 10.0;
+        const double a_max = 10.0;
+        segment_times = estimateSegmentTimes(vertices, v_max, a_max); 
 
         // segment_times.push_back(3.97);
         // segment_times.push_back(4.47);
@@ -176,6 +190,7 @@ public:
         mav_trajectory_generation::trajectoryToPolynomialTrajectoryMsg(trajectory,
                                                                         &msg);
         msg.header.frame_id = "world";
+        msg.header.stamp = rclcpp::Clock().now();
         pub_trajectory_->publish(msg);
 
         RCLCPP_INFO(this->get_logger(),"DONE. GOODBYE.");
