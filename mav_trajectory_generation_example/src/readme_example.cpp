@@ -92,10 +92,6 @@ public:
         const double a_max = 10.0;
         segment_times = estimateSegmentTimes(vertices, v_max, a_max); 
 
-        // segment_times.push_back(3.97);
-        // segment_times.push_back(4.47);
-        // segment_times.push_back(6.0);
-
         for (auto i : segment_times) {
             RCLCPP_INFO(this->get_logger(), "Segment %f", i);
         }
